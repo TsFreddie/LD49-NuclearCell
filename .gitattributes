@@ -1,0 +1,5 @@
+*.sln eol=lf
+*.csproj eol=lf
+*.asset eol=lf
+*.meta eol=lf
+*.cs eol=lf
