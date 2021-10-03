@@ -247,6 +247,7 @@ MonoBehaviour:
   Opened: 0
   ShutoffTime: 3
   WarningTime: 1
+  _openTime: 0
 --- !u!1 &110207312
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,11 +306,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276110788}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.522}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.52199966}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children: []
-  m_Father: {fileID: 1763694621}
+  m_Father: {fileID: 1280400359}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &293912754
@@ -1014,6 +1015,38 @@ MonoBehaviour:
   WallCam: {fileID: 703942716}
   SocketMounts:
   - {fileID: 1763694625}
+--- !u!1 &1280400358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1280400359}
+  m_Layer: 0
+  m_Name: Socket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1280400359
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280400358}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.07}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 276110789}
+  - {fileID: 1763694621}
+  m_Father: {fileID: 1983059274}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1337688432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,7 +1260,7 @@ GameObject:
   - component: {fileID: 1763694622}
   - component: {fileID: 1763694625}
   m_Layer: 0
-  m_Name: SocketMount
+  m_Name: Model(ReplaceThis)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1241,11 +1274,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1763694620}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.07}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
-  m_Children:
-  - {fileID: 276110789}
-  m_Father: {fileID: 1983059274}
+  m_Children: []
+  m_Father: {fileID: 1280400359}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1763694622
@@ -1354,7 +1386,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 302330087}
-  - {fileID: 1763694621}
+  - {fileID: 1280400359}
   - {fileID: 703942717}
   - {fileID: 1337688433}
   - {fileID: 171163876}
@@ -1515,7 +1547,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8116568787364540881, guid: 81cf8e0aa733c594cae3ae8d039a8119, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8116568787364540881, guid: 81cf8e0aa733c594cae3ae8d039a8119, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1559,8 +1591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8116568787364540886, guid: 81cf8e0aa733c594cae3ae8d039a8119, type: 3}
       propertyPath: m_Name
-      value: SocketSidePlug
+      value: Brick
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 6800044695451306608, guid: 81cf8e0aa733c594cae3ae8d039a8119, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81cf8e0aa733c594cae3ae8d039a8119, type: 3}
