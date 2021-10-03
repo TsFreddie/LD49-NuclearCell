@@ -7,6 +7,8 @@ namespace NuclearCell
         Up = 0,
         Right,
         Down,
-        Left
+        Left,
+        UpDown,
+        LeftRight,
     }
 }

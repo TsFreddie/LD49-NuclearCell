@@ -6,11 +6,13 @@ namespace NuclearCell
 {
     public static class GetComponentExtension
     {
-        public static T GetComponentReferenced<T>(this GameObject obj) where T : Component
+        public static T GetComponentSmart<T>(this GameObject obj) where T : Component
         {
-            if (obj.GetComponent<T>())
+            var comp = obj.GetComponent<T>();
+            if (!comp) comp = obj.GetComponentInParent<T>();
+            if (comp)
             {
-                return obj.GetComponent<T>();
+                return comp;
             }
             else
             {
@@ -24,11 +26,13 @@ namespace NuclearCell
             return null;
         }
 
-        public static T GetComponentReferenced<T>(this Component obj) where T : Component
+        public static T GetComponentSmart<T>(this Component obj) where T : Component
         {
-            if (obj.GetComponent<T>())
+            var comp = obj.GetComponent<T>();
+            if (!comp) comp = obj.GetComponentInParent<T>();
+            if (comp)
             {
-                return obj.GetComponent<T>();
+                return comp;
             }
             else
             {
@@ -38,7 +42,6 @@ namespace NuclearCell
                     return referenceFinder.Script as T;
                 }
             }
-
             return null;
         }
     }

@@ -1,5 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR 
 using UnityEditor;
+#endif
 
 namespace NuclearCell
 {
@@ -180,6 +182,7 @@ namespace NuclearCell
             Picked = false;
         }
 
+#if UNITY_EDITOR 
         protected void OnDrawGizmos()
         {
             // Draw a yellow sphere at the transform's position
@@ -187,5 +190,6 @@ namespace NuclearCell
             plugOnScreen.y -= 24;
             Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "BrickType " + Type.ToString() + " (" + Orientation.ToString() + ")", "sv_label_7");
         }
+#endif
     }
 }

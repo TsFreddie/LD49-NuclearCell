@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR 
 using UnityEditor;
+#endif
 
 namespace NuclearCell
 {
@@ -14,6 +16,8 @@ namespace NuclearCell
         public float SpeedUpMoveSpeed = 2.5f;
 
         public float SuccessTolerance = 0.06f;
+
+        public bool Started = false;
 
         [Header("Gameplay")]
         public int Type;
@@ -28,6 +32,7 @@ namespace NuclearCell
 
         protected void Update()
         {
+            if (!Started) return;
             if (_targetTransform != null)
             {
                 transform.position = Vector3.Lerp(transform.position, _targetTransform.position - PlugTransform.localPosition, 15.0f * Time.deltaTime);
@@ -37,6 +42,7 @@ namespace NuclearCell
 
         protected void FixedUpdate()
         {
+            if (!Started) return;
             if (_targetTransform == null)
             {
                 var move = Input.GetAxis("Horizontal");
@@ -48,26 +54,24 @@ namespace NuclearCell
         // TODO!: do success and gameover logic
         protected void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.tag == "Phone")
+            var phone = collision.gameObject.GetComponentSmart<Phone>();
+            if (phone == null) return;
+            if (phone.Type != Type)
             {
-                var phone = collision.gameObject.GetComponentReferenced<Phone>();
-                if (phone.Type != Type)
-                {
-                    Debug.Log("Explode");
-                    return;
-                }
+                Debug.Log("Explode");
+                return;
+            }
 
-                var deltaPos = Mathf.Abs(phone.PortTransform.position.x - PlugTransform.position.x);
-                if (deltaPos <= SuccessTolerance)
-                {
-                    var rating = Mathf.Min(((int)((1.0f - (deltaPos / SuccessTolerance)) * 10f) * 10) + 60, 100);
-                    Connected(phone.PortTransform);
-                    Debug.Log(rating);
-                }
-                else
-                {
-                    Debug.Log("Explode");
-                }
+            var deltaPos = Mathf.Abs(phone.PortTransform.position.x - PlugTransform.position.x);
+            if (deltaPos <= SuccessTolerance)
+            {
+                var rating = Mathf.Min(((int)((1.0f - (deltaPos / SuccessTolerance)) * 10f) * 10) + 60, 100);
+                Connected(phone.PortTransform);
+                Debug.Log(rating);
+            }
+            else
+            {
+                Debug.Log("Explode");
             }
         }
 
@@ -77,6 +81,7 @@ namespace NuclearCell
             _targetTransform = target;
         }
 
+#if UNITY_EDITOR 
         protected void OnDrawGizmos()
         {
             // Draw a yellow sphere at the transform's position
@@ -84,5 +89,6 @@ namespace NuclearCell
             plugOnScreen.y -= 24;
             Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "PlugType " + Type.ToString(), "sv_label_7");
         }
+#endif
     }
 }
