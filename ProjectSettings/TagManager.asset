@@ -5,9 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Phone
-  - PhoneSidePlug
   - Socket
-  - SocketSidePlug
+  - Plug
+  - Brick
+  - DropZone
   layers:
   - Default
   - TransparentFX
