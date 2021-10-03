@@ -44,8 +44,8 @@ namespace NuclearCell
         {
             // Draw a yellow sphere at the transform's position
             var plugOnScreen = Camera.current.WorldToScreenPoint(SocketTransform.position);
-            plugOnScreen.y += 21;
-            Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "SocketType " + Type.ToString() + " (" + Orientation.ToString() + ")", "sv_label_2");
+            plugOnScreen.y += 12;
+            Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "SocketType " + Type.ToString() + " (" + Orientation.ToString() + ")", "sv_label_3");
         }
     }
 }
