@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEditor;
 
 namespace NuclearCell
 {
     /// <summary>
     /// Basic mount, no requirement
     /// </summary>
-    public class SocketMount : MonoBehaviour
+    public class Socket : MonoBehaviour
     {
         [Header("Data")]
         public Transform SocketTransform;
@@ -38,5 +39,13 @@ namespace NuclearCell
         }
 
         public virtual void Reset() { }
+
+        protected void OnDrawGizmos()
+        {
+            // Draw a yellow sphere at the transform's position
+            var plugOnScreen = Camera.current.WorldToScreenPoint(SocketTransform.position);
+            plugOnScreen.y += 21;
+            Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "SocketType " + Type.ToString() + " (" + Orientation.ToString() + ")", "sv_label_2");
+        }
     }
 }

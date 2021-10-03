@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 
 namespace NuclearCell
 {
@@ -177,6 +178,14 @@ namespace NuclearCell
         protected void OnMouseUp()
         {
             Picked = false;
+        }
+
+        protected void OnDrawGizmos()
+        {
+            // Draw a yellow sphere at the transform's position
+            var plugOnScreen = Camera.current.WorldToScreenPoint(PlugTransform.position);
+            plugOnScreen.y += 21;
+            Handles.Label(Camera.current.ScreenToWorldPoint(plugOnScreen), "BrickType " + Type.ToString() + " (" + Orientation.ToString() + ")", "sv_label_2");
         }
     }
 }

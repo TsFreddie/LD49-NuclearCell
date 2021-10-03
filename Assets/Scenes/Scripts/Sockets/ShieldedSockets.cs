@@ -5,7 +5,7 @@ namespace NuclearCell
     /// <summary>
     /// Shield of a mount, click to open
     /// </summary>
-    public class ShieldedMount : SocketMount
+    public class ShieldedMount : Socket
     {
         public GameObject Shield;
         public Transform OpenPosition;

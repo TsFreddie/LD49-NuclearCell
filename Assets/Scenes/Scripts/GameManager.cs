@@ -9,6 +9,6 @@ namespace NuclearCell
         public Camera DeskCam;
         public Camera WallCam;
 
-        public List<SocketMount> SocketMounts;
+        public List<Socket> SocketMounts;
     }
 }
