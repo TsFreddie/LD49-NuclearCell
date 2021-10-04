@@ -9,8 +9,16 @@ namespace NuclearCell
     {
         public Transform PortTransform;
 
+        public Vector3 TargetPosition;
+
         [Header("Gameplay")]
         public int Type;
+
+        public void Update()
+        {
+            transform.position = Vector3.Lerp(transform.position, TargetPosition, 10.0f * Time.deltaTime);
+        }
+
 #if UNITY_EDITOR 
         protected void OnDrawGizmos()
         {

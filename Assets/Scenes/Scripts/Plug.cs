@@ -17,6 +17,8 @@ namespace NuclearCell
 
         public float SuccessTolerance = 0.06f;
 
+        public bool PreStart = false;
+        public Transform StartingTransform;
         public bool Started = false;
 
         [Header("Gameplay")]
@@ -25,6 +27,8 @@ namespace NuclearCell
         private Rigidbody _rigidbody;
         private Transform _targetTransform = null;
 
+        private bool _pressingDrop = false;
+
         protected void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -32,7 +36,42 @@ namespace NuclearCell
 
         protected void Update()
         {
-            if (!Started) return;
+            if (PreStart)
+            {
+                if (StartingTransform != null)
+                {
+                    if ((transform.position - StartingTransform.position).sqrMagnitude < 0.001f)
+                    {
+                        PreStart = false;
+                        Started = true;
+                        transform.position = StartingTransform.position;
+                        transform.rotation = StartingTransform.rotation;
+                    }
+                    else
+                    {
+                        transform.position = Vector3.Lerp(transform.position, StartingTransform.position, 15.0f * Time.deltaTime);
+                        transform.rotation = Quaternion.Lerp(transform.rotation, StartingTransform.rotation, 15.0f * Time.deltaTime);
+                    }
+                }
+                else
+                {
+                    PreStart = false;
+                    Started = true;
+                }
+            }
+
+            if (!Started)
+            {
+                _pressingDrop = false;
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                _pressingDrop = true;
+
+            if (Input.GetKeyUp(KeyCode.Space))
+                _pressingDrop = false;
+
             if (_targetTransform != null)
             {
                 transform.position = Vector3.Lerp(transform.position, _targetTransform.position - PlugTransform.localPosition, 15.0f * Time.deltaTime);
@@ -46,7 +85,7 @@ namespace NuclearCell
             if (_targetTransform == null)
             {
                 var move = Input.GetAxis("Horizontal");
-                var dropSpeed = Input.GetKey(KeyCode.Space) ? SpeedUpMoveSpeed : DropSpeed;
+                var dropSpeed = _pressingDrop ? SpeedUpMoveSpeed : DropSpeed;
                 _rigidbody.velocity = new Vector3(move * MoveSpeed, 0, dropSpeed);
             }
         }
@@ -67,7 +106,8 @@ namespace NuclearCell
             {
                 var rating = Mathf.Min(((int)((1.0f - (deltaPos / SuccessTolerance)) * 10f) * 10) + 60, 100);
                 Connected(phone.PortTransform);
-                Debug.Log(rating);
+                // SUCCESS!
+                GameManager.Singleton.PlugSuccess(rating);
             }
             else
             {

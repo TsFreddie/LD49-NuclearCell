@@ -1,0 +1,15 @@
+{
+  "Phones": [
+    { "Level": 1, "Weight": 1, "Data": "5800" },
+    { "Level": 1, "Weight": 1, "Data": "iphone4" },
+    { "Level": 2, "Weight": 1, "Data": "sum" },
+    { "Level": 2, "Weight": 1, "Data": "iphonexs" },
+    { "Level": 2, "Weight": 1, "Data": "mate40" },
+    { "Level": 3, "Weight": 0.5, "Data": "GBA" },
+    { "Level": 3, "Weight": 0.5, "Data": "c137" }
+  ],
+  "Sockets": [
+    { "Level": 1, "Weight": 1, "Data": "type" },
+    { "Level": 1, "Weight": 1, "Data": "type" }
+  ]
+}
