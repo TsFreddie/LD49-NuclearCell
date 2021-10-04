@@ -18,7 +18,8 @@ namespace NuclearCell
         TaskFinished,
         Plugged,
         PluggedFaultily,
-        Finishing
+        Charging,
+        Exploding,
     }
 
     public class PhoneSession
@@ -28,6 +29,8 @@ namespace NuclearCell
         public Brick Brick;
         public Socket Socket;
         public SessionState State;
+        public float ChargeTime;
+        public float TimeLimit;
     }
 
     public class GameManager : SingletonBehaviour<GameManager>
@@ -37,8 +40,6 @@ namespace NuclearCell
 
         public Transform PlugAnchor;
         public Transform SelectedPlugAnchor;
-
-        public List<Socket> SocketMounts;
 
         public Transform[] BrickSlotPositions;
         public Transform[] PhonePositions;
@@ -52,12 +53,13 @@ namespace NuclearCell
 
         private GameObject[] _phonePrefabs;
         private GameObject[] _brickPrefabs;
-        private GameObject[] _socketPrefabs;
 
         private DeskGameState _deskGameState;
         private PhoneSession[] _phoneSessions;
 
         private int _plugSelection = 0;
+
+        public LevelData Level { get => _levelData; }
 
         public void Start()
         {
@@ -69,7 +71,6 @@ namespace NuclearCell
 
             _phonePrefabs = new GameObject[_levelData.Phones.Length];
             _brickPrefabs = new GameObject[_levelData.Bricks.Length];
-            _socketPrefabs = new GameObject[_levelData.Sockets.Length];
 
             for (var i = 0; i < PhonePositions.Length; i++)
             {
@@ -82,11 +83,7 @@ namespace NuclearCell
                 _brickPrefabs[i] = Resources.Load<GameObject>("Prefabs/Bricks/" + brick.Data);
             }
 
-            for (var i = 0; i < _levelData.Sockets.Length; i++)
-            {
-                var socket = _levelData.Sockets[i];
-                _socketPrefabs[i] = Resources.Load<GameObject>("Prefabs/Sockets/" + socket.Data);
-            }
+            SocketManager.Singleton.InitSockets();
 
             _brickSlots = new bool[BrickSlotPositions.Length];
 
@@ -220,7 +217,7 @@ namespace NuclearCell
             return gameObj.GetComponent<Phone>();
         }
 
-        public void PlugDropped()
+        public void StartPlugSelection()
         {
             _deskGameState = DeskGameState.PlugSelection;
             for (var i = 0; i < _plugObjects.Length; i++)
@@ -275,11 +272,52 @@ namespace NuclearCell
             }
         }
 
+        public int RandomBrick()
+        {
+            // TODO!: consider level and weight
+            return Random.Range(0, _levelData.Bricks.Length);
+        }
+
+        public BrickData RandomBrickData()
+        {
+            return _levelData.Bricks[RandomBrick()];
+        }
+
         public void SpawnBrick(int slot, int session)
         {
-            // _phoneSessions[session].Brick = 
+            var brick = RandomBrick();
+            _phoneSessions[session].Brick = Instantiate(_brickPrefabs[brick]).GetComponent<Brick>();
+            _phoneSessions[session].Brick.Slot = slot;
+            SocketManager.Singleton.RegisterBrick(_phoneSessions[session].Brick.Type);
+            SocketManager.Singleton.SetupSocketForType(_phoneSessions[session].Brick.Type, 3);
+
+            // TODO!: spawn animation for brick 
+            _phoneSessions[session].Brick.TargetPos = BrickSlotPositions[slot].position;
+            _phoneSessions[session].Brick.Session = session;
+            _phoneSessions[session].Brick.transform.position = BrickSlotPositions[slot].position + new Vector3(0, -2.5f, 0);
+            _phoneSessions[session].Brick.transform.rotation = BrickSlotPositions[slot].rotation;
             _brickSlots[slot] = true;
-            // TODO!: spawn brick fr
+        }
+
+        public void ReleaseBrickSlot(int slot)
+        {
+            _brickSlots[slot] = false;
+            if (_deskGameState == DeskGameState.PlugWaitForBrick)
+                StartPlugSelection();
+        }
+
+        public void BrickMounted(int session, int rating)
+        {
+            if (_phoneSessions[session].State == SessionState.PluggedFaultily)
+            {
+                _phoneSessions[session].State = SessionState.Exploding;
+                Debug.Log("Explode");
+            }
+            else
+            {
+                _phoneSessions[session].State = SessionState.Charging;
+                Debug.Log("Charging");
+            }
         }
     }
 }

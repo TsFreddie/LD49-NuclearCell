@@ -49,9 +49,10 @@ namespace NuclearCell
             Shield.transform.rotation = Quaternion.Lerp(Shield.transform.rotation, targetRotation, Time.deltaTime * 15.0f);
         }
 
-        public override bool CanMount(int type)
+        public override int TryMount(Brick brick, Transform plugTransform)
         {
-            return Opened && base.CanMount(type);
+            if (!Opened) return -1;
+            return base.TryMount(brick, plugTransform);
         }
 
         public override void Reset()

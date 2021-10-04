@@ -78,7 +78,7 @@ namespace NuclearCell
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, 15.0f * Time.deltaTime);
             }
 
-            if (transform.position.z > 8 ||
+            if (transform.position.z > 7.6 ||
                 transform.position.z < -8 ||
                 transform.position.x < -5 ||
                 transform.position.x > 5 ||
@@ -86,7 +86,7 @@ namespace NuclearCell
                 transform.position.y < -2
             )
             {
-                GameManager.Singleton.PlugDropped();
+                GameManager.Singleton.StartPlugSelection();
                 Destroy(gameObject);
             }
         }

@@ -24,18 +24,22 @@ namespace NuclearCell
         public int Type;
         public SocketOrientation Orientation;
 
+        public Vector3 TargetPos { get; set; }
+        public int Session { get; set; }
+
         private Rigidbody _rigidbody;
-        private Vector3 _targetPos;
         private float _baseZ;
         private float _targetZ;
         private float _targetScale;
         private bool _pickState;
         private Transform _connectedTransform = null;
 
+        public int Slot { get; set; } = -1;
+
         protected void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _targetPos = transform.position;
+            // TargetPos = transform.position;
             _baseZ = transform.position.z;
             _targetScale = 1.0f;
             _pickState = false;
@@ -48,7 +52,7 @@ namespace NuclearCell
                 if (Picked)
                 {
                     var mousePos = GameManager.Singleton.WallCam.ScreenToWorldPoint(Input.mousePosition);
-                    _targetPos = new Vector3(mousePos.x - GrabAnchor.x, mousePos.y - GrabAnchor.y, _baseZ + _targetZ);
+                    TargetPos = new Vector3(mousePos.x - GrabAnchor.x, mousePos.y - GrabAnchor.y, _baseZ + _targetZ);
                 }
             }
             else
@@ -61,7 +65,7 @@ namespace NuclearCell
                 }
                 else if (!Started)
                 {
-                    transform.position = Vector3.Lerp(transform.position, _targetPos, 15.0f * Time.deltaTime);
+                    transform.position = Vector3.Lerp(transform.position, TargetPos, 15.0f * Time.deltaTime);
                 }
             }
         }
@@ -76,7 +80,7 @@ namespace NuclearCell
                     {
                         Pick();
                     }
-                    _rigidbody.MovePosition(_targetPos);
+                    _rigidbody.MovePosition(TargetPos);
                     _rigidbody.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime * 5);
                 }
                 else if (!Picked && _pickState)
@@ -106,6 +110,12 @@ namespace NuclearCell
 
         public void Pick()
         {
+            if (Slot >= 0)
+            {
+                GameManager.Singleton.ReleaseBrickSlot(Slot);
+                Slot = -1;
+            }
+
             _rigidbody.isKinematic = true;
             _targetScale = 1.0f;
             _targetZ = -1.5f;
@@ -135,20 +145,24 @@ namespace NuclearCell
 
         public bool Mount()
         {
-            foreach (var socket in GameManager.Singleton.SocketMounts)
+            foreach (var socket in SocketManager.Singleton.Sockets)
             {
-                if (socket.CanMount(Type))
+                if (socket == null) continue;
+                var mountScore = socket.TryMount(this, PlugTransform);
+                if (mountScore >= 0)
                 {
-                    var mountScore = socket.TryMount(PlugTransform);
-                    if (mountScore >= 0)
-                    {
-                        _connectedTransform = socket.SocketTransform;
-                        _rigidbody.isKinematic = true;
-                        return true;
-                    }
+                    _rigidbody.isKinematic = true;
+                    SocketManager.Singleton.UnregisterBrick(Type);
+                    GameManager.Singleton.BrickMounted(Session, mountScore);
+                    return true;
                 }
             }
             return false;
+        }
+
+        public void SetConnectedTransform(Transform transform)
+        {
+            _connectedTransform = transform;
         }
 
         protected void OnMouseDown()
@@ -174,12 +188,18 @@ namespace NuclearCell
                     // TODO!: trigger gameover
                 }
                 Destroy(gameObject);
+                SocketManager.Singleton.UnregisterBrick(Type);
             }
         }
 
         protected void OnMouseUp()
         {
             Picked = false;
+        }
+
+        public void GoOut()
+        {
+            Drop(true);
         }
 
 #if UNITY_EDITOR 
