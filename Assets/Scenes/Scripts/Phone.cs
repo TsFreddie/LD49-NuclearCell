@@ -14,6 +14,8 @@ namespace NuclearCell
         [Header("Gameplay")]
         public int Type;
 
+        public int Session { get; set; }
+
         public void Update()
         {
             transform.position = Vector3.Lerp(transform.position, TargetPosition, 10.0f * Time.deltaTime);

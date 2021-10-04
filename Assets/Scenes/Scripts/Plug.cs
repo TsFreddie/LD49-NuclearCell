@@ -77,6 +77,18 @@ namespace NuclearCell
                 transform.position = Vector3.Lerp(transform.position, _targetTransform.position - PlugTransform.localPosition, 15.0f * Time.deltaTime);
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, 15.0f * Time.deltaTime);
             }
+
+            if (transform.position.z > 8 ||
+                transform.position.z < -8 ||
+                transform.position.x < -5 ||
+                transform.position.x > 5 ||
+                transform.position.y > 2 ||
+                transform.position.y < -2
+            )
+            {
+                GameManager.Singleton.PlugDropped();
+                Destroy(gameObject);
+            }
         }
 
         protected void FixedUpdate()
@@ -107,7 +119,7 @@ namespace NuclearCell
                 var rating = Mathf.Min(((int)((1.0f - (deltaPos / SuccessTolerance)) * 10f) * 10) + 60, 100);
                 Connected(phone.PortTransform);
                 // SUCCESS!
-                GameManager.Singleton.PlugSuccess(rating);
+                GameManager.Singleton.PlugSuccess(this, phone.Session, rating);
             }
             else
             {

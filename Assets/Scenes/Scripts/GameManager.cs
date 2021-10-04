@@ -17,6 +17,7 @@ namespace NuclearCell
         Allocated,
         TaskFinished,
         Plugged,
+        PluggedFaultily,
         Finishing
     }
 
@@ -48,10 +49,13 @@ namespace NuclearCell
         private GameObject[] _plugObjects;
         private Vector3[] _plugTargetPositions;
         private Quaternion[] _plugTargetRotations;
+
         private GameObject[] _phonePrefabs;
+        private GameObject[] _brickPrefabs;
+        private GameObject[] _socketPrefabs;
 
         private DeskGameState _deskGameState;
-        private PhoneSession[] _taskSessions;
+        private PhoneSession[] _phoneSessions;
 
         private int _plugSelection = 0;
 
@@ -59,13 +63,29 @@ namespace NuclearCell
         {
             _levelData = LevelData.FromResource("LevelDesc");
             _plugObjects = new GameObject[_levelData.Phones.Length];
-            _phonePrefabs = new GameObject[_levelData.Phones.Length];
             _plugTargetPositions = new Vector3[_levelData.Phones.Length];
             _plugTargetRotations = new Quaternion[_levelData.Phones.Length];
-            _taskSessions = new PhoneSession[PhonePositions.Length];
+            _phoneSessions = new PhoneSession[PhonePositions.Length];
+
+            _phonePrefabs = new GameObject[_levelData.Phones.Length];
+            _brickPrefabs = new GameObject[_levelData.Bricks.Length];
+            _socketPrefabs = new GameObject[_levelData.Sockets.Length];
+
             for (var i = 0; i < PhonePositions.Length; i++)
             {
-                _taskSessions[i] = new PhoneSession();
+                _phoneSessions[i] = new PhoneSession();
+            }
+
+            for (var i = 0; i < _levelData.Bricks.Length; i++)
+            {
+                var brick = _levelData.Bricks[i];
+                _brickPrefabs[i] = Resources.Load<GameObject>("Prefabs/Bricks/" + brick.Data);
+            }
+
+            for (var i = 0; i < _levelData.Sockets.Length; i++)
+            {
+                var socket = _levelData.Sockets[i];
+                _socketPrefabs[i] = Resources.Load<GameObject>("Prefabs/Sockets/" + socket.Data);
             }
 
             _brickSlots = new bool[BrickSlotPositions.Length];
@@ -80,6 +100,10 @@ namespace NuclearCell
             }
             UpdatePlugTargetPosition();
             SyncPlugToTarget();
+
+            SessionStart();
+            SessionStart();
+            SessionStart();
         }
 
         public void Update()
@@ -116,9 +140,9 @@ namespace NuclearCell
         public void ConfirmSelection()
         {
             var newPlug = Instantiate(_plugObjects[_plugSelection]);
-            var nwePlugScript = newPlug.GetComponent<Plug>();
-            nwePlugScript.PreStart = true;
-            nwePlugScript.StartingTransform = PlugAnchor;
+            var newPlugScript = newPlug.GetComponent<Plug>();
+            newPlugScript.PreStart = true;
+            newPlugScript.StartingTransform = PlugAnchor;
             newPlug.GetComponent<Rigidbody>().isKinematic = false;
             _plugObjects[_plugSelection].SetActive(false);
             _deskGameState = DeskGameState.PlugGameplay;
@@ -169,9 +193,9 @@ namespace NuclearCell
 
         public void SessionStart()
         {
-            for (var i = 0; i < _taskSessions.Length; i++)
+            for (var i = 0; i < _phoneSessions.Length; i++)
             {
-                var session = _taskSessions[i];
+                var session = _phoneSessions[i];
                 if (session.State == SessionState.Idle)
                 {
                     Debug.Log(i);
@@ -182,6 +206,7 @@ namespace NuclearCell
 
                     session.Phone.transform.position = PhonePositions[i].position + new Vector3(0, 0, 5);
                     session.Phone.TargetPosition = PhonePositions[i].position;
+                    session.Phone.Session = i;
                     break;
                 }
             }
@@ -195,10 +220,30 @@ namespace NuclearCell
             return gameObj.GetComponent<Phone>();
         }
 
-        public void PlugSuccess(int rating)
+        public void PlugDropped()
+        {
+            _deskGameState = DeskGameState.PlugSelection;
+            for (var i = 0; i < _plugObjects.Length; i++)
+                _plugObjects[i].SetActive(true);
+            SyncPlugToTarget();
+            UpdatePlugTargetPosition();
+        }
+
+        public void PlugSuccess(Plug which, int session, int rating)
         {
             var occupied = 0;
             var spawned = false;
+
+            _phoneSessions[session].Plug = which;
+            if (_phoneSessions[session].State != SessionState.TaskFinished)
+            {
+                _phoneSessions[session].State = SessionState.PluggedFaultily;
+            }
+            else
+            {
+                _phoneSessions[session].State = SessionState.Plugged;
+            }
+
             for (var i = 0; i < _brickSlots.Length; i++)
             {
                 if (!_brickSlots[i])
@@ -207,7 +252,7 @@ namespace NuclearCell
                     {
                         spawned = true;
                         occupied++;
-                        SpawnBrick(i);
+                        SpawnBrick(i, session);
                     }
                 }
                 else
@@ -230,8 +275,9 @@ namespace NuclearCell
             }
         }
 
-        public void SpawnBrick(int slot)
+        public void SpawnBrick(int slot, int session)
         {
+            // _phoneSessions[session].Brick = 
             _brickSlots[slot] = true;
             // TODO!: spawn brick fr
         }

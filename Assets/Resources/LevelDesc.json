@@ -8,8 +8,18 @@
     { "Level": 3, "Weight": 0.5, "Data": "GBA" },
     { "Level": 3, "Weight": 0.5, "Data": "c137" }
   ],
+  "Bricks": [
+    { "Level": 1, "Weight": 1, "Data": "s1", "Type": 1 },
+    { "Level": 1, "Weight": 1, "Data": "s2", "Type": 2 },
+    { "Level": 1, "Weight": 1, "Data": "s3", "Type": 3 },
+    { "Level": 1, "Weight": 1, "Data": "s4", "Type": 4 },
+    { "Level": 1, "Weight": 1, "Data": "s5", "Type": 5 }
+  ],
   "Sockets": [
-    { "Level": 1, "Weight": 1, "Data": "type" },
-    { "Level": 1, "Weight": 1, "Data": "type" }
+    { "Level": 1, "Weight": 1, "Data": "s1", "Types": [1] },
+    { "Level": 1, "Weight": 1, "Data": "s2", "Types": [2] },
+    { "Level": 1, "Weight": 1, "Data": "s3", "Types": [3] },
+    { "Level": 1, "Weight": 1, "Data": "s4", "Types": [4] },
+    { "Level": 1, "Weight": 1, "Data": "s5", "Types": [5] }
   ]
 }
